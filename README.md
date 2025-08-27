@@ -3,6 +3,7 @@
 E-commerce de moda tipo B2C (Business To Consumer) 
 **Lenguaje**: ```Typescript```
 
+---
 ### Backend: 
 * **Endpoints**: ```Next.js API Routes```
 * **Testing**: Jest + Supertest
@@ -25,7 +26,7 @@ E-commerce de moda tipo B2C (Business To Consumer)
     * Soporte al cliente:
         * _Sección de FAQ_
         * _Formulario de contacto_ 
-  
+---
 ### Bases de datos:
 * PostgreSQL + Prisma ORM
 * Tablas y Relaciones
