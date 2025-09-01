@@ -15,10 +15,33 @@ datasource db {
 }
 
 model Product {
-	id       Int    @id @default(autoincrement())
-	name     String @db.VarChar(100)
-	category String @unique
-	price    Float
-	createdAt DateTime @default(now())
-	updatedAt DateTime @updatedAt
+	id       	Int    	 	@id @default(autoincrement())
+	name     	String 	 	@db.VarChar(100)
+	sku		  	String 	 	@unique
+	category_id Int 
+	image    	String 	 	@db.VarChar(100)
+	descrip  	String 	 	@db.VarChar(150)
+	brand  	 	String 	 	@db.VarChar(50)
+	price 	 	Decimal  	@db.Decimal(10,2)
+
+	discount_id Int?     
+	discount    Discount? 	@relation(fields: [discount_id], references: [id])
+	is_new      Boolean
+	
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
+}
+
+model Discount {
+	id 				  Int 	 	@default(autoincrement())
+	descript		  String 	@db.VarChar(100)
+	discount_percent  Int 
+	active 			  Boolean
+
+	product          Product[]
+}
+
+model Category {
+	id 		Int 	@default(autoincrement())
+	name 	String 	@db.VarChar(100)
 }
