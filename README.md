@@ -30,8 +30,10 @@ E-commerce de moda tipo B2C (Business To Consumer)
 ### Bases de datos:
 * PostgreSQL + Prisma ORM
 * Tablas y Relaciones
+![alt text](image.png)
 * Migraciones 
 * Seeders
+
 ---
 ### Seguridad
 * **Autenticación (AuthN)**: JWT (JSON Web Tokens)
@@ -53,3 +55,4 @@ E-commerce de moda tipo B2C (Business To Consumer)
  * TailwindCSS
  * Framer Motion 
  * Testing
+  
