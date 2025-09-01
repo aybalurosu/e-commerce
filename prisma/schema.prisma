@@ -14,18 +14,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
 model Product {
 	id       	Int    	 	@id @default(autoincrement())
 	name     	String 	 	@db.VarChar(100)
 	sku		  	String 	 	@unique
-	category_id Int 
 	image    	String 	 	@db.VarChar(100)
 	descrip  	String 	 	@db.VarChar(150)
 	brand  	 	String 	 	@db.VarChar(50)
 	price 	 	Decimal  	@db.Decimal(10,2)
 
-	discount_id Int?     
+	discount_id Int?   		@unique  
 	discount    Discount? 	@relation(fields: [discount_id], references: [id])
+
+	category_id Int			@unique
+	category	Category	@relation(fields: [category_id], references: [id])
+
+	stock		Stock
+	OrderItems	OrderItems[]
+
 	is_new      Boolean
 	
 	createdAt DateTime 		@default(now())
@@ -33,7 +41,7 @@ model Product {
 }
 
 model Discount {
-	id 				  Int 	 	@default(autoincrement())
+	id 				  Int 	 	@id @default(autoincrement())
 	descript		  String 	@db.VarChar(100)
 	discount_percent  Int 
 	active 			  Boolean
@@ -42,6 +50,93 @@ model Discount {
 }
 
 model Category {
-	id 		Int 	@default(autoincrement())
-	name 	String 	@db.VarChar(100)
+	id 			Int 	@id @default(autoincrement())
+	name 		String 	@db.VarChar(50)
+	descrip		String 	@db.VarChar(100)
+	parent_id   Int 	@unique
+
+	product 	Product[]
 }
+
+model Warehouse {
+	id 			Int 	@id @default(autoincrement())
+	name 		String 	@db.VarChar(50)
+	address		String 	@db.VarChar(100)
+	city   		String 	@db.VarChar(50)
+	country   	String 	@db.VarChar(50)
+	phone   	String 	@db.VarChar(9)
+
+	stock		Stock[]
+}
+
+model Stock {
+	id 				Int 		@id @default(autoincrement())
+	quantity		Int
+	
+	product_id 		Int   		@unique  
+	product    		Product 	@relation(fields: [product_id], references: [id])
+
+	warehouse_id 	Int			@unique
+	warehouse		Warehouse	@relation(fields: [warehouse_id], references: [id])
+}
+
+model OrderItems {
+	id 			Int 		@id @default(autoincrement())
+	quantity	Int
+
+	order_id 	Int 		@unique
+	order		Order		@relation(fields: [order_id], references: [id])
+
+	product_id	Int			@unique
+	product		Product		@relation(fields: [product_id], references: [id])
+}	
+
+model Order {
+	id 			Int 		@id @default(autoincrement())
+	date 		DateTime
+	status		String		@db.VarChar(50)
+	total		Decimal		@db.Decimal(10,2)
+
+	payment_id 	Int			@unique
+	payment 	Payment		@relation(fields: [payment_id], references: [id])
+
+	customer_id	Int			@unique
+	customer 	Customer	@relation(fields: [customer_id], references: [id])
+}
+
+model Customer {
+	id 					Int 		@id @default(autoincrement())
+	first_name 			String		@db.VarChar(50)
+	last_name			String		@db.VarChar(50)
+	email				String		@db.VarChar(100)
+	password			String		@db.VarChar(50)
+	phone				String		@db.VarChar(9)
+
+	order				Order[]
+	customer_address	CustomerAddress[]
+}
+
+model CustomerAddress {
+	id 					Int 		@id @default(autoincrement())
+	address 			String		@db.VarChar(50)
+	postal_code			String		@db.VarChar(50)
+	city				String		@db.VarChar(100)
+	country				String		@db.VarChar(50)
+
+	customer_id			Int			@unique
+	customer 			Customer	@relation(fields: [customer_id], references: [id])
+}
+
+
+
+model Payment {
+	id 					Int 		@id @default(autoincrement())
+	amount 				Decimal		@db.Decimal(10,2)
+	status				String		@db.VarChar(50)
+	payment_method		String		@db.VarChar(50)
+	currency			String		@db.VarChar(50)
+
+	order				Order
+}
+
+
