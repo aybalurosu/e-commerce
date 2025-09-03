@@ -24,31 +24,34 @@ model Product {
 	descrip  	String 	 	@db.VarChar(100)
 	brand  	 	String 	 	@db.VarChar(50)
 	price 	 	Decimal  	@db.Decimal(10,2)
-	is_new      Boolean
+	isNew      Boolean
 
-	discount_id Int?   		  
-	discount    Discount? 	@relation(fields: [discount_id], references: [id])
+	discount    Discount? 	@relation(fields: [discountId], references: [id])
+	discountId 	Int?   		  
 
-	category_id Int			
-	category	Category	@relation(fields: [category_id], references: [id])
+	category	Category	@relation(fields: [categoryId], references: [id])
+	categoryId 	Int			
 
 	stock		Stock[]
-	order_item	OrderItem[]
+	orderItem	OrderItem[]
 
-	cart_item	CartItem[]
-	wish_item	WishItem[]
+	cartItem	CartItem[]
+	wishItem	WishItem[]
 	
-	createdAt DateTime 		@default(now())
-	updatedAt DateTime 	 	@updatedAt
+	createdAt 	DateTime 	@default(now())
+	updatedAt 	DateTime 	 @updatedAt
 }
 
 model Discount {
 	id 				  Int 	 	@id @default(autoincrement())
 	descript		  String 	@db.VarChar(100)
-	discount_percent  Int 
+	discountPercent   Int 
 	active 			  Boolean
 
 	product          Product[]
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }
 
 model Category {
@@ -56,22 +59,30 @@ model Category {
 	name 		String 		@db.VarChar(50)
 	descrip		String 		@db.VarChar(100)
 
-	parent_id   Int?	
-	parent 		Category? 	@relation("CategoryHierarchy", fields: [parent_id], references: [id])
-	children	Category[]	@relation("CategoryHierarchy")
+		
+	parent 		Category? 	@relation(name: "SubCategory", fields: [parentId], references: [id])
+	parentId   	Int?
+
+	subcategory	Category[]	@relation(name: "SubCategory")
 
 	product 	Product[]
+
+	createdAt 	DateTime 	@default(now())
+	updatedAt 	DateTime 	@updatedAt
 }
 
 model Stock {
 	id 				Int 		@id @default(autoincrement())
 	quantity		Int
-	
-	product_id 		Int   		  
-	product    		Product 	@relation(fields: [product_id], references: [id])
+	   		  
+	product    		Product 	@relation(fields: [productId], references: [id])
+	productId 		Int
 
-	warehouse_id 	Int			
-	warehouse		Warehouse	@relation(fields: [warehouse_id], references: [id])
+	warehouse		Warehouse	@relation(fields: [warehouseId], references: [id])
+	warehouseId 	Int			
+
+	createdAt 		DateTime 	@default(now())
+	updatedAt 		DateTime 	@updatedAt
 }
 
 model Warehouse {
@@ -83,18 +94,38 @@ model Warehouse {
 	phone   	String 	@db.Char(9)    @unique
 
 	stock		Stock[]
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }
 
 model OrderItem {
 	id 			Int 		@id @default(autoincrement())
 	quantity	Int
 
-	order_id 	Int 		
-	order		Order		@relation(fields: [order_id], references: [id])
+	order		Order		@relation(fields: [orderId], references: [id])
+	orderId 	Int 		
 
-	product_id	Int			
-	product		Product		@relation(fields: [product_id], references: [id])
+	product		Product		@relation(fields: [productId], references: [id])
+	productId	Int			
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }	
+
+model Payment {
+	id 					Int 		@id @default(autoincrement())
+	amount 				Decimal		@db.Decimal(10,2)
+	status				String		@db.VarChar(50)
+	paymentMethod		String		@db.VarChar(50)
+	currency			String		@db.VarChar(50)
+
+	order				Order		@relation(fields: [orderId], references: [id])
+	orderId				Int 		@unique
+
+	createdAt 			DateTime 	@default(now())
+	updatedAt 			DateTime 	@updatedAt
+}
 
 model Order {
 	id 			Int 		@id @default(autoincrement())
@@ -102,70 +133,73 @@ model Order {
 	status		String		@db.VarChar(50)
 	total		Decimal		@db.Decimal(10,2)
 
-	payment_id 	Int			
-	payment 	Payment		@relation(fields: [payment_id], references: [id])
+	payment 	Payment?		
+			
+	customer 	Customer	@relation(fields: [customerId], references: [id])
+	customerId	Int
 
-	customer_id	Int			
-	customer 	Customer	@relation(fields: [customer_id], references: [id])
+	orderItem	OrderItem[]
 
-	order_item	OrderItem[]
-}
-
-model Payment {
-	id 					Int 		@id @default(autoincrement())
-	amount 				Decimal		@db.Decimal(10,2)
-	status				String		@db.VarChar(50)
-	payment_method		String		@db.VarChar(50)
-	currency			String		@db.VarChar(50)
-
-	order				Order
+	createdAt	DateTime 	@default(now())
+	updatedAt 	DateTime 	@updatedAt
 }
 
 model Customer {
 	id 					Int 		@id @default(autoincrement())
-	first_name 			String		@db.VarChar(50)
-	last_name			String		@db.VarChar(50)
+	firstName 			String		@db.VarChar(50)
+	lastName			String		@db.VarChar(50)
 	email				String		@db.VarChar(100) @unique
 	password			String		@db.VarChar(50)
 	phone				String		@db.Char(9)      @unique
 
 	order				Order[]
-	customer_address	CustomerAddress[]
-	cart_list			CartList
-	wish_list			WishList[]
+	customerAddress		CustomerAddress[]
+	cartList			CartList?
+	wishList			WishList[]
+
+	createdAt 			DateTime 	@default(now())
+	updatedAt 			DateTime 	@updatedAt
 }
 
 model CustomerAddress {
 	id 					Int 		@id @default(autoincrement())
 	address 			String		@db.VarChar(50)
-	postal_code			String		@db.VarChar(50)
+	postalCode			String		@db.VarChar(50)
 	city				String		@db.VarChar(100)
 	country				String		@db.VarChar(50)
 
-	customer_id			Int			
-	customer 			Customer	@relation(fields: [customer_id], references: [id])
+	customer 			Customer	@relation(fields: [customerId], references: [id])
+	customerId			Int			
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }
 
 model CartList {
 	id 					Int 		@id @default(autoincrement())
 
-	customer_id			Int			@unique
-	customer 			Customer	@relation(fields: [customer_id], references: [id])
+	customer 			Customer	@relation(fields: [customerId], references: [id])
+	customerId			Int			@unique
 
-	cart_item			CartItem[]
+	cartItem			CartItem[]
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }
-
 
 model CartItem {
 	id 					Int 		@id @default(autoincrement())
 	quantity			Int		
-	unit_price			Decimal		@db.Decimal(10,2)
+	unitPrice			Decimal		@db.Decimal(10,2)
 
-	cart_id				Int			
-	cart_list			CartList	@relation(fields: [cart_id], references: [id])
+	cartList			CartList	@relation(fields: [cartId], references: [id])
+	cartId				Int			
+			
+	product 			Product		@relation(fields: [productId], references: [id])
+	productId			Int
 
-	product_id			Int			
-	product 			Product		@relation(fields: [product_id], references: [id])
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }
 
 
@@ -173,19 +207,25 @@ model WishList {
 	id 					Int 		@id @default(autoincrement())
 	name				String		@db.VarChar(50)
 
-	customer_id			Int			
-	customer 			Customer	@relation(fields: [customer_id], references: [id])
+	customer 			Customer	@relation(fields: [customerId], references: [id])
+	customerId			Int			
 
-	wish_item			WishItem[]
+	wishItem			WishItem[]
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }
 
 
 model WishItem {
 	id 					Int 		@id @default(autoincrement())
 
-	wish_id				Int
-	wish_list			WishList	@relation(fields: [wish_id], references: [id])
+	wishList			WishList	@relation(fields: [wishId], references: [id])
+	wishId				Int
 
-	product_id			Int			
-	product 			Product		@relation(fields: [product_id], references: [id])
+	product 			Product		@relation(fields: [productId], references: [id])
+	productId			Int			
+
+	createdAt DateTime 		@default(now())
+	updatedAt DateTime 	 	@updatedAt
 }

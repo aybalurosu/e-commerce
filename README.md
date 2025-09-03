@@ -30,7 +30,7 @@ E-commerce de moda tipo B2C (Business To Consumer)
 ### Bases de datos:
 * PostgreSQL + Prisma ORM
 * Tablas y Relaciones
-![alt text](image.png)
+![alt text]()
 * Migraciones 
 * Seeders
 
