@@ -243,4 +243,3 @@ ALTER TABLE "public"."WishItem" ADD CONSTRAINT "WishItem_wishId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "public"."WishItem" ADD CONSTRAINT "WishItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-

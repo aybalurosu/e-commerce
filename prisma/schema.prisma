@@ -154,7 +154,7 @@ model Customer {
 
 	order				Order[]
 	customerAddress		CustomerAddress[]
-	cartList			CartList?
+	cartList			CartList?	
 	wishList			WishList[]
 
 	createdAt 			DateTime 	@default(now())
